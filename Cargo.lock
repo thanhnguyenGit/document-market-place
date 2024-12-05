@@ -6431,6 +6431,11 @@ dependencies = [
 [[package]]
 name = "support"
 version = "0.1.0"
+dependencies = [
+ "ink",
+ "parity-scale-codec",
+ "scale-info",
+]
 
 [[package]]
 name = "syn"
