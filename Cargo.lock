@@ -1511,6 +1511,9 @@ version = "0.1.0"
 dependencies = [
  "ink",
  "ink_e2e",
+ "parity-scale-codec",
+ "scale-info",
+ "support",
 ]
 
 [[package]]
@@ -6424,6 +6427,10 @@ dependencies = [
  "subxt",
  "zeroize",
 ]
+
+[[package]]
+name = "support"
+version = "0.1.0"
 
 [[package]]
 name = "syn"
