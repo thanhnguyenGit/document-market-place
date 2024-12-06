@@ -6,21 +6,21 @@ use scale_info::TypeInfo;
 #[ink::event]
 pub struct DocumentEvent {
     #[ink(topic)]
-    from: Option<AccountId>,
+    pub from: Option<AccountId>,
     #[ink(topic)]
-    to: Option<AccountId>,
+    pub to: Option<AccountId>,
     #[ink(topic)]
-    event_type: EventType,
+    pub event_type: EventType,
 }
 
 #[derive(Debug, Decode, Encode)]
 #[cfg_attr(feature = "std", derive(scale_info::TypeInfo))]
 pub enum EventType {
     Transfer {
-        document_id: Vec<u8>,
+        document_id: [u8; 32],
     },
     Approval {
-        document_id: Vec<u8>,
+        document_id: [u8; 32],
     },
     ApprovalForAll {
         owner: AccountId,
