@@ -4,7 +4,8 @@ members = [
 	"market_place",
 	"upgrade_proxy",
 	"access_control",
-	"payment_settlement",
+	"payment_settlement", 
+	"logics",
 ]
 [workspace.package]
 name = "document-market-place"
@@ -14,7 +15,7 @@ authors = ["vietthanhnguyen <nguyenvietthanh18112002@gmail.com>"]
 edition = "2021"
 [workspace.dependencies]
 # Ink dependencies
-ink = { version = "5.0.0", default-features = false }
+ink = { version = "4.3.0", default-features = false }
 scale = { package = "parity-scale-codec", version = "3", default-features = false, features = ["derive"] }
 scale-info = { version = "2.6", default-features = false, features = ["derive"] }
 # Local contracts
@@ -23,6 +24,7 @@ market_place = {path = "../document-market-place/market_place", default-feature 
 upgrade_proxy = {path = "../document-market-place/upgrade_proxy", default-feature = false}
 access_control = {path = "../document-market-place/access_control", default-feature = false}
 payment_settlement = {path = "../document-market-place/payment_settlement", default-feature = false}
+logics = {path = "../document-market-place/logics", default-feature=false}
 # local dependencies
 [profile.release]
 panic = "abort"

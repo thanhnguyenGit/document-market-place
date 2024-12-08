@@ -5,13 +5,15 @@ authors = ["[your_name] <[your_email]>"]
 edition = "2021"
 
 [dependencies]
-ink = { version = "5.0.0", default-features = false }
+ink = { version = "4.3.0", default-features = false }
 scale = { package = "parity-scale-codec", version = "3", default-features = false, features = ["derive"] }
 scale-info = { version = "2.6", default-features = false, features = ["derive"], optional = true }
 support = {path = "../support", default-feature=false,optional=true}
+openbrush = {git = "https://github.com/Brushfam/openbrush-contracts",branch = "main", default-features = false, features = ["psp34", "ownable"] }
+# local dependencies
+logics = {path = "../logics", default-feature=false,optional=true}
 [dev-dependencies]
-ink_e2e = { version = "5.0.0" }
-
+ink_e2e = { version = "4.3.0" }
 [lib]
 path = "lib.rs"
 [features]
@@ -20,7 +22,9 @@ std = [
     "ink/std",
     "scale/std",
     "scale-info/std",
-    "support",
+    "openbrush/std",
+    # local crates
+    'logics',
 ]
 ink-as-dependency = []
 e2e-tests = []
