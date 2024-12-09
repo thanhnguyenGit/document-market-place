@@ -1,52 +1,51 @@
 #![cfg_attr(not(feature = "std"), no_std, no_main)]
 
-#[openbrush::implementation(PSP34, Ownable, PSP34Enumerable, PSP34Metadata, PSP34Mintable)]
-#[openbrush::contract]
+#[pendzl::implementation(PSP34, PSP34Metadata, PSP34Burnable)]
+#[ink::contract]
 pub mod document_nft {
-    use logics::impls::payable_mint::payable_mint;
-    use openbrush::traits::Storage;
+    use ink::prelude::string::*;
+    use pendzl::contracts::psp34::*;
+    use pendzl::contracts::psp34::{burnable::PSP34Burnable, metadata::PSP34Metadata, PSP34Error};
+    type DocumentResult<T> = Result<T, PSP34Error>;
     #[ink(storage)]
-    #[derive(Default, Storage)]
+    #[derive(Default, StorageFieldGetter)]
     pub struct DocumentNft {
         #[storage_field]
-        psp34: psp34::Data,
+        document: PSP34Data,
         #[storage_field]
-        ownable: ownable::Data,
-        #[storage_field]
-        metadata: metadata::Data,
-        #[storage_field]
-        enumerable: enumerable::Data,
+        metadata: PSP34MetadataData,
+        // #[storage_field]
+        // ownable: OwnableData,
+        // #[storage_field]
+        // burnable: PSP34BurnableData,
+        next_id: u8,
     }
-
-    #[overrider(PSP34Mintable)]
-    #[openbrush::modifiers(only_owner)]
-    fn mint(&mut self, account: AccountId, id: Id) -> Result<(), PSP34Error> {
-        psp34::InternalImpl::_mint_to(self, account, id)
-    }
-
-    impl payable_mint::PayableMintImpl for DocumentNft {}
 
     impl DocumentNft {
         #[ink(constructor)]
         pub fn new() -> Self {
-            let mut _instance = Self::default();
-            ownable::Internal::_init_with_owner(&mut _instance, Self::env().caller());
-            psp34::Internal::_mint_to(&mut _instance, Self::env().caller(), Id::U8(1))
-                .expect("Can mint");
-            let collection_id = psp34::PSP34Impl::collection_id(&_instance);
-            metadata::Internal::_set_attribute(
-                &mut _instance,
-                collection_id.clone(),
-                String::from("name"),
-                String::from("document"),
-            );
-            metadata::Internal::_set_attribute(
-                &mut _instance,
-                collection_id,
-                String::from("symbol"),
-                String::from("Doc"),
-            );
-            _instance
+            let caller = Self::env().caller();
+            let mut instance = Self::default();
+            // instance._update_owner(&Some(caller));
+            instance
+        }
+        #[ink(message)]
+        pub fn mint_token(&mut self) -> DocumentResult<()> {
+            let caller = self.env().caller();
+            let next_id = Id::U8(self.next_id);
+            self._mint_to(&caller, &next_id)?;
+            self.next_id = self.next_id.checked_add(1).unwrap();
+            Ok(())
+        }
+
+        #[ink(message)]
+        pub fn mint(&mut self, id: Id, name: String, symbol: String) -> DocumentResult<()> {
+            let caller = self.env().caller();
+            let name_key = String::from("name");
+            let symbol_key = String::from("symbol");
+            self._set_attribute(&id.clone(), &name_key, &name);
+            self._set_attribute(&id.clone(), &symbol_key, &symbol);
+            Ok(())
         }
     }
 }

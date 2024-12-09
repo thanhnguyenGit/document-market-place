@@ -12,16 +12,17 @@ mod e2e_tests {
 
     /// We test that we can upload and instantiate the contract using its default constructor.
     #[ink_e2e::test]
-    async fn default_works(mut client: ink_e2e::Client<C, E>) -> E2EResult<()> {
+    async fn return_collection_id_of_account(mut client: ink_e2e::Client<C, E>) -> E2EResult<()> {
         // Given
-        let mut constructor = DocumentNftRef::default();
+        let mut constructor = DocumentNftRef::new();
 
         // When
         let contract = client
             .instantiate("document_nft", &ink_e2e::alice(), &mut constructor)
             .submit()
             .await
-            .expect("instantiate failed");
+            .expect("instantiate failed")
+            .call_builder::<Contract>();
         let call_builder = contract.call_builder::<DocumentNft>();
 
         // Then

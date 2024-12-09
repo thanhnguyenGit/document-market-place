@@ -1,6 +1,5 @@
-use extensions::metadata;
+use extensions::metadata::{self, PSP34MetadataImpl};
 use openbrush::contracts::ownable;
-use openbrush::contracts::psp34::psp34;
 use openbrush::traits::{DefaultEnv, Storage};
 use openbrush::{
     contracts::psp34::*,
@@ -8,7 +7,6 @@ use openbrush::{
 };
 
 use crate::impls::payable_mint::types::Data;
-
 #[openbrush::trait_definition]
 pub trait PayableMintImpl:
     Storage<Data>
@@ -32,6 +30,37 @@ pub trait PayableMintImpl:
         }
         Ok(())
     }
+    #[ink(message)]
+    #[openbrush::modifiers(only_owner)]
+    fn withdraw(&mut self) -> Result<(), PSP34Error> {
+        let balance = Self::env().balance();
+        let current_balance = balance
+            .checked_sub(Self::env().minimum_balance())
+            .unwrap_or_default();
+        let owner = self.data::<ownable::Data>().owner.get().unwrap().unwrap();
+        Self::env()
+            .transfer(owner, current_balance)
+            .map_err(|_| PSP34Error::Custom(String::from("WithdrawalFailed")))?;
+        Ok(())
+    }
+    #[ink(message)]
+    #[openbrush::modifiers(only_owner)]
+    fn set_base_uri(&mut self, uri: String) -> Result<(), PSP34Error> {
+        let id = PSP34Impl::collection_id(self);
+        metadata::Internal::_set_attribute(self, id, String::from("baseURI"), uri);
+        Ok(())
+    }
+    #[ink(message)]
+    fn token_uri(&self, token_id: u64) -> Result<String, PSP34Error> {
+        self.token_exists(Id::U64(token_id))?;
+        let base_uri = PSP34MetadataImpl::get_attribute(
+            self,
+            PSP34Impl::collection_id(self),
+            String::from("baseURI"),
+        );
+        let token_uri = base_uri.unwrap() + &token_id.to_string() + &String::from(".json");
+        Ok(token_uri)
+    }
 }
 
 pub trait Internal: Storage<Data> + psp34::Internal {
@@ -53,5 +82,9 @@ pub trait Internal: Storage<Data> + psp34::Internal {
             }
         }
         return Err(PSP34Error::Custom(String::from("CollectionIsFull")));
+    }
+    fn token_exists(&self, id: Id) -> Result<(), PSP34Error> {
+        self._owner_of(&id).ok_or(PSP34Error::TokenNotExists)?;
+        Ok(())
     }
 }

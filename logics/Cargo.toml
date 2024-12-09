@@ -5,13 +5,13 @@ authors = ["[your_name] <[your_email]>"]
 edition = "2021"
 
 [dependencies]
-ink = { version = "4.3.0", default-features = false }
-scale = { package = "parity-scale-codec", version = "3", default-features = false, features = ["derive"] }
-scale-info = { version = "2.6", default-features = false, features = ["derive"], optional = true }
-openbrush = {git = "https://github.com/Brushfam/openbrush-contracts",branch = "main", default-features = false, features = ["psp34", "ownable"] }
-
+ink = { version = "5.0.0", default-features = false }
+scale = { package = "parity-scale-codec", version = "3.6.9", default-features = false, features = ["derive"] }
+scale-info = { version = "2.11", default-features = false, features = ["derive"], optional = true }
+# openbrush = {git = "https://github.com/Brushfam/openbrush-contracts",branch = "main", default-features = false, features = ["psp34", "ownable"] }
+pendzl = { git = "https://github.com/Pendzl/pendzl",branch = "main", default-features = false, features = ["psp34_impl","psp34_burnable_impl","psp34_metadata_impl","psp34_metadata_impl"] }
 [dev-dependencies]
-ink_e2e = { version = "4.3.0" }
+ink_e2e = { version = "5.0.0" }
 
 [lib]
 path = "lib.rs"
@@ -22,7 +22,8 @@ std = [
     "ink/std",
     "scale/std",
     "scale-info",
-    "openbrush/std",
+    "pendzl/std",
+    # "openbrush/std",
 ]
 ink-as-dependency = []
 e2e-tests = []

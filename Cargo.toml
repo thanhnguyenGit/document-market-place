@@ -15,9 +15,9 @@ authors = ["vietthanhnguyen <nguyenvietthanh18112002@gmail.com>"]
 edition = "2021"
 [workspace.dependencies]
 # Ink dependencies
-ink = { version = "4.3.0", default-features = false }
-scale = { package = "parity-scale-codec", version = "3", default-features = false, features = ["derive"] }
-scale-info = { version = "2.6", default-features = false, features = ["derive"] }
+ink = { version = "5.0.0", default-features = false }
+scale = { package = "parity-scale-codec", version = "3.6.9", default-features = false, features = ["derive"] }
+scale-info = { version = "2.11", default-features = false, features = ["derive"] }
 # Local contracts
 document_nft = {path = "../document-market-place/document_nft", default-feature = false}
 market_place = {path = "../document-market-place/market_place", default-feature = false}
