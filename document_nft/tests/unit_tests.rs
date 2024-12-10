@@ -2,19 +2,19 @@
 #[cfg(test)]
 mod tests {
     use document_nft::document_nft::DocumentNft;
-
-    #[ink::test]
-    fn default_works() {
-        let document_nft = DocumentNft::default();
-        assert_eq!(document_nft.get(), false);
-    }
+    use ink::prelude::{
+        string::{String, ToString},
+        vec,
+    };
+    use pendzl::traits::Balance;
 
     /// We test a simple use case of our contract.
     #[ink::test]
-    fn it_works() {
-        let mut document_nft = DocumentNft::new(false);
-        assert_eq!(document_nft.get(), false);
-        document_nft.flip();
-        assert_eq!(document_nft.get(), true);
+    fn mint_once_works() {
+        let mut contract = DocumentNft::new();
+        let name = String::from("Thanh Picture");
+        let symbol = String::from("THP");
+        let price = 11;
+        contract.mint_once(name, symbol, price);
     }
 }

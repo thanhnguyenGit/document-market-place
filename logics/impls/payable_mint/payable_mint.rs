@@ -88,3 +88,4 @@ pub trait Internal: Storage<Data> + psp34::Internal {
         Ok(())
     }
 }
+
