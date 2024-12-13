@@ -3,14 +3,18 @@
 #[pendzl::implementation(PSP34, PSP34Metadata, PSP34Burnable)]
 #[ink::contract]
 pub mod document_nft {
-    use ink::prelude::{
-        string::{String, ToString},
-        vec,
+    use ink::{
+        prelude::{
+            string::{String, ToString},
+            vec,
+        },
+        storage::traits::AutoStorableHint,
     };
-    use pendzl::contracts::psp34::metadata::PSP34Metadata;
     use pendzl::contracts::psp34::mintable::PSP34Mintable;
     use pendzl::contracts::psp34::{Id, PSP34Error, *};
+    use pendzl::contracts::{access_control::RoleType, psp34::metadata::PSP34Metadata};
     type DocumentResult<T> = Result<T, PSP34Error>;
+
     #[ink(storage)]
     #[derive(Default, StorageFieldGetter)]
     pub struct DocumentNft {
@@ -18,7 +22,7 @@ pub mod document_nft {
         pub document: PSP34Data,
         #[storage_field]
         pub metadata: PSP34MetadataData,
-        pub next_id: u8,
+        pub nonce: u8,
     }
 
     impl DocumentNft {
@@ -60,7 +64,7 @@ pub mod document_nft {
             symbol: String,
             price: Balance,
         ) -> DocumentResult<()> {
-            let id = Id::U8(self.next_id);
+            let id = Id::U8(self.nonce);
             let symbol_key = String::from("symbol");
             let name_key = String::from("name");
             let price_key = String::from("price");
@@ -68,7 +72,7 @@ pub mod document_nft {
             self._set_attribute(&id, &symbol_key, &symbol);
             self._set_attribute(&id, &price_key, &price.to_string());
             self._mint_to(&caller, &id)?;
-            self.next_id = self.next_id.checked_add(1).unwrap();
+            self.nonce = self.nonce.checked_add(1).unwrap();
             Ok(())
         }
     }
