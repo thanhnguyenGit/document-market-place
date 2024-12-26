@@ -75,7 +75,7 @@ mod tests {
         );
     }
     #[ink::test]
-    fn transfer_worl() {
+    fn transfer_work() {
         let account = ink::env::test::default_accounts::<ink::env::DefaultEnvironment>();
         let mut contract = DocumentNft::new();
         let name = String::from("Thanh Picture");
@@ -95,18 +95,22 @@ mod tests {
     fn burn_work() {
         let account = ink::env::test::default_accounts::<ink::env::DefaultEnvironment>();
         let mut contract = DocumentNft::new();
-        let name = String::from("Thanh Picture");
-        let symbol = String::from("THP");
-        let price = 11;
-        assert_eq!(contract.mint_once(name, symbol, price), Ok(()));
-        assert_eq!(contract.balance_of(account.alice), 1);
+        let name1 = String::from("Thanh Picture");
+        let symbol1 = String::from("THP");
+        let price1 = 11;
+        let name2 = String::from("Thanh");
+        let symbol2 = String::from("Thanh");
+        let price2 = 20;
+
+        let data = vec![(name1, symbol1, price1), (name2, symbol2, price2)];
+        assert_eq!(contract.batch_mint(data), Ok(()));
+        assert_eq!(contract.balance_of(account.alice), 2);
         assert_eq!(contract.balance_of(account.bob), 0);
-        assert_eq!(
-            contract.burn(account.bob, Id::U8(0)),
-            Err(PSP34Error::NotApproved)
-        );
-        assert_eq!(contract.burn(account.alice, Id::U8(0)), Ok(()))
+        assert_eq!(contract.burn(Id::U8(0)), Ok(()));
+        set_caller::<ink::env::DefaultEnvironment>(account.bob);
+        assert_eq!(contract.burn(Id::U8(1)), Err(PSP34Error::NotApproved));
     }
+
     #[ink::test]
     fn approval_work() {
         let account = ink::env::test::default_accounts::<ink::env::DefaultEnvironment>();
@@ -117,7 +121,11 @@ mod tests {
         assert_eq!(contract.mint_once(name, symbol, price), Ok(()));
         assert_eq!(contract.balance_of(account.alice), 1);
         assert_eq!(contract.approve(account.bob, Some(Id::U8(0)), true), Ok(()));
+        assert_eq!(
+            contract.allowance(account.alice, account.bob, Some(Id::U8(0))),
+            true
+        );
         set_caller::<ink::env::DefaultEnvironment>(account.bob);
-        assert_eq!(contract.burn(account.bob, Id::U8(0)), Ok(()));
+        assert_eq!(contract.burn(Id::U8(0)), Ok(()));
     }
 }

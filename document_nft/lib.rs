@@ -53,6 +53,19 @@ pub mod document_nft {
             self._set_attribute(&id, &String::from("baseURI"), &uri);
             Ok(())
         }
+        #[ink(message)]
+        pub fn burn(&mut self, id: Id) -> DocumentResult<()> {
+            if let Some(owner) = self._owner_of(&id) {
+                let caller = Self::env().caller();
+                if caller == owner || self._allowance(&owner, &caller, &Some(id.clone())) {
+                    self._burn_from(&caller, &id)
+                } else {
+                    Err(PSP34Error::NotApproved)
+                }
+            } else {
+                Err(PSP34Error::TokenNotExists)
+            }
+        }
         fn token_exists(&self, id: Id) -> DocumentResult<()> {
             self._owner_of(&id).ok_or(PSP34Error::TokenNotExists)?;
             Ok(())
